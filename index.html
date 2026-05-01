@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>LE COIN TRADER - VIP TERMINAL V14.2</title>
+    <style>
+        html, body { height: 100%; margin: 0; overflow: hidden; background-color: #0d1117; font-family: 'Segoe UI', sans-serif; color: white; }
+        .main-wrapper { display: flex; flex-direction: column; height: 100vh; }
+        .top-section { display: flex; flex: 1; overflow: hidden; }
+
+        /* ZONE GRAPHIQUE AVEC LOGO FILIGRANE */
+        #chart-zone { flex: 4; border-right: 1px solid #30363d; position: relative; background: #0d1117; }
+        #tv-chart { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+        
+        .chart-watermark {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            z-index: 2; opacity: 0.15; pointer-events: none; width: 25%;
+        }
+
+        /* SIDEBAR DASHBOARD */
+        #side-dashboard { width: 380px; background-color: #111418; display: flex; flex-direction: column; border-left: 1px solid #30363d; overflow-y: auto; }
+        .header-brand { padding: 15px; background: #1c1f26; border-bottom: 2px solid #e3b341; text-align: center; }
+        .header-logo { height: 45px; }
+
+        /* CALCULATEUR STYLE PREMIUM */
+        .calc-card { background: #1c1f26; margin: 15px; padding: 20px; border-radius: 15px; border: 1px solid #30363d; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .calc-title { color: #00d2ff; text-align: center; font-weight: bold; font-size: 14px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
+        .input-label { font-size: 9px; color: #8b949e; font-weight: bold; text-transform: uppercase; margin-bottom: 4px; display: block; }
+        .dual-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+        .calc-card input { width: 100%; background: #2d333b; border: 1px solid #444c56; border-radius: 8px; padding: 10px; color: white; box-sizing: border-box; outline: none; font-weight: bold; }
+        
+        .result-box { background: #0d1117; border: 2px solid #00d2ff; border-radius: 12px; padding: 15px; margin: 15px 0; text-align: center; box-shadow: 0 0 15px rgba(0, 210, 255, 0.15); }
+        .result-val { color: #00d2ff; font-size: 36px; font-weight: 800; display: block; }
+        .split-info { margin-top: 10px; padding-top: 10px; border-top: 1px dashed #30363d; display: flex; justify-content: space-around; font-size: 10px; color: #00ff88; font-weight: bold; }
+
+        /* SIGNAUX ACCORDÉON */
+        .section-title { font-size: 10px; color: #8b949e; text-transform: uppercase; padding: 10px 20px; letter-spacing: 1.5px; }
+        .lct-accordion { margin: 0 15px 10px; border-radius: 10px; border: 1px solid #2d333b; background: #1c1f26; overflow: hidden; }
+        .lct-header { padding: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #e3b341; transition: 0.2s; }
+        .lct-header:hover { background: #24292f; }
+        .lct-content { max-height: 0; overflow: hidden; transition: 0.3s ease; background: #0d1117; }
+        .lct-content.open { max-height: 500px; padding: 12px; border-top: 1px solid #30363d; }
+        
+        .badge { display: flex; justify-content: space-between; padding: 10px; border-radius: 6px; font-size: 11px; margin-bottom: 5px; background: #1c1f26; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; }
+        .badge:hover { background: #2d333b; }
+        .tp { border-left: 3px solid #00ff88; color: #00ff88; }
+        .sl { border-left: 3px solid #ff5252; color: #ff5252; }
+    </style>
+</head>
+<body>
+
+<div class="main-wrapper">
+    <div class="top-section">
+        <div id="chart-zone">
+            <div id="tv-chart"></div>
+            <img src="logo.png" class="chart-watermark">
+        </div>
+
+        <div id="side-dashboard">
+            <div class="header-brand"><img src="logo.png" class="header-logo"></div>
+
+            <!-- CALCULATEUR DYNAMIQUE -->
+            <div class="calc-card">
+                <div class="calc-title">Calculateur de Gestion</div>
+                <div class="dual-inputs">
+                    <div><span class="input-label">Capital (€)</span><input type="number" id="cap" value="1000" oninput="updateCalculation()"></div>
+                    <div><span class="input-label">Risque %</span><input type="number" id="risk" value="1" step="0.5" oninput="updateCalculation()"></div>
+                </div>
+                <div class="dual-inputs">
+                    <div><span class="input-label">Entrée</span><input type="number" id="price-in" placeholder="0.00" oninput="updateCalculation()"></div>
+                    <div><span class="input-label">Stop Loss</span><input type="number" id="price-sl" placeholder="0.00" oninput="updateCalculation()"></div>
+                </div>
+                
+                <div class="result-box">
+                    <span style="font-size:10px; font-weight:bold;">LOT TOTAL</span>
+                    <span id="res-lot" class="result-val">0.10</span>
+                    <div class="split-info">
+                        <div>TP1 (33%)<br><b id="split-1">0.03</b></div>
+                        <div>TP2 (33%)<br><b id="split-2">0.03</b></div>
+                        <div>TP3 (33%)<br><b id="split-3">0.04</b></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-title">Signaux Scanner VIP</div>
+            <div id="alerts-log">
+                
+                <!-- SIGNAL GOLD -->
+                <div class="lct-accordion">
+                    <div class="lct-header" onclick="autoTrade('OANDA:XAUUSD', 2348.40, 2342.10, this, 10)">
+                        <div><b>GOLD (XAUUSD)</b><br><small>Achat Confirmé</small></div>
+                        <div style="font-weight:bold; color:#e3b341;">2348.40</div>
+                    </div>
+                    <div class="lct-content">
+                        <div class="badge tp" onclick="copyVal('2355.00')"><span>TP 1</span> <span>2355.00 📋</span></div>
+                        <div class="badge tp" onclick="copyVal('2360.00')"><span>TP 2</span> <span>2360.00 📋</span></div>
+                        <div class="badge tp" onclick="copyVal('2370.00')"><span>TP 3</span> <span>2370.00 📋</span></div>
+                        <div class="badge sl" onclick="copyVal('2342.10')"><span>STOP LOSS</span> <span>2342.10 📋</span></div>
+                    </div>
+                </div>
+
+                <!-- SIGNAL US30 -->
+                <div class="lct-accordion">
+                    <div class="lct-header" onclick="autoTrade('CAPITALCOM:US30', 38500, 38450, this, 1)">
+                        <div><b>DOW JONES (US30)</b><br><small>Vente Setup</small></div>
+                        <div style="font-weight:bold; color:#00d2ff;">38500</div>
+                    </div>
+                    <div class="lct-content">
+                        <div class="badge tp" onclick="copyVal('38400')"><span>TP 1</span> <span>38400 📋</span></div>
+                        <div class="badge tp" onclick="copyVal('38350')"><span>TP 2</span> <span>38350 📋</span></div>
+                        <div class="badge tp" onclick="copyVal('38300')"><span>TP 3</span> <span>38300 📋</span></div>
+                        <div class="badge sl" onclick="copyVal('38450')"><span>STOP LOSS</span> <span>38450 📋</span></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+<script>
+    let currentFactor = 10;
+
+    function loadChart(symbol) {
+        new TradingView.widget({
+            "autosize": true, "symbol": symbol, "interval": "15", "theme": "dark", "style": "1",
+            "locale": "fr", "hide_side_toolbar": false, "allow_symbol_change": true,
+            "container_id": "tv-chart", "backgroundColor": "#0d1117"
+        });
+    }
+    loadChart("OANDA:XAUUSD");
+
+    function autoTrade(symbol, entry, sl, element, factor) {
+        loadChart(symbol);
+        document.getElementById('price-in').value = entry;
+        document.getElementById('price-sl').value = sl;
+        currentFactor = factor;
+        updateCalculation();
+        
+        const content = element.nextElementSibling;
+        document.querySelectorAll('.lct-content').forEach(c => c.classList.remove('open'));
+        content.classList.add('open');
+    }
+
+    function updateCalculation() {
+        const cap = parseFloat(document.getElementById('cap').value);
+        const risk = parseFloat(document.getElementById('risk').value);
+        const entry = parseFloat(document.getElementById('price-in').value);
+        const sl = parseFloat(document.getElementById('price-sl').value);
+
+        if (cap && risk && entry && sl && entry !== sl) {
+            const amountToRisk = cap * (risk / 100);
+            const distance = Math.abs(entry - sl);
+            
+            // Calcul précis : Montant / (Distance SL * Facteur actif)
+            let totalLots = amountToRisk / (distance * currentFactor);
+            if (totalLots < 0.01) totalLots = 0.01;
+
+            document.getElementById('res-lot').innerText = totalLots.toFixed(2);
+            
+            const baseSplit = Math.floor((totalLots / 3) * 100) / 100;
+            const remainder = (totalLots - (baseSplit * 2)).toFixed(2);
+            
+            document.getElementById('split-1').innerText = (baseSplit < 0.01 ? 0.01 : baseSplit).toFixed(2);
+            document.getElementById('split-2').innerText = (baseSplit < 0.01 ? 0.01 : baseSplit).toFixed(2);
+            document.getElementById('split-3').innerText = (remainder < 0.01 ? 0.01 : remainder).toFixed(2); 
+        }
+    }
+
+    function copyVal(val) { navigator.clipboard.writeText(val); }
+    updateCalculation();
+</script>
+</body>
+</html>
