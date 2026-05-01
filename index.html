@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>LE COIN TRADER - VIP TERMINAL V14.2</title>
+    <title>LE COIN TRADER - VIP TERMINAL V14.3</title>
     <style>
         html, body { height: 100%; margin: 0; overflow: hidden; background-color: #0d1117; font-family: 'Segoe UI', sans-serif; color: white; }
         .main-wrapper { display: flex; flex-direction: column; height: 100vh; }
@@ -124,9 +124,17 @@
 
     function loadChart(symbol) {
         new TradingView.widget({
-            "autosize": true, "symbol": symbol, "interval": "15", "theme": "dark", "style": "1",
-            "locale": "fr", "hide_side_toolbar": false, "allow_symbol_change": true,
-            "container_id": "tv-chart", "backgroundColor": "#0d1117"
+            "autosize": true, 
+            "symbol": symbol, 
+            "interval": "15", 
+            "theme": "dark", 
+            "style": "1",
+            "locale": "fr", 
+            "hide_side_toolbar": false, 
+            "allow_symbol_change": true,
+            "container_id": "tv-chart", 
+            "backgroundColor": "#0d1117",
+            "lock_scale": false // Permet de débloquer l'échelle de prix
         });
     }
     loadChart("OANDA:XAUUSD");
@@ -153,7 +161,6 @@
             const amountToRisk = cap * (risk / 100);
             const distance = Math.abs(entry - sl);
             
-            // Calcul précis : Montant / (Distance SL * Facteur actif)
             let totalLots = amountToRisk / (distance * currentFactor);
             if (totalLots < 0.01) totalLots = 0.01;
 
