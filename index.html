@@ -1,182 +1,241 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>LE COIN TRADER - VIP TERMINAL V14.3</title>
-    <style>
-        html, body { height: 100%; margin: 0; overflow: hidden; background-color: #0d1117; font-family: 'Segoe UI', sans-serif; color: white; }
-        .main-wrapper { display: flex; flex-direction: column; height: 100vh; }
-        .top-section { display: flex; flex: 1; overflow: hidden; }
+<meta charset="UTF-8">
+<title>LE COIN TRADER - VIP TERMINAL V15.0</title>
+<!-- FontAwesome pour les icônes JIFU style -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+--bg-deep: #0d1117;
+--bg-sidebar: #080a0d;
+--bg-card: #161b22;
+--accent: #e3b341; /* Ton Or */
+--blue-jifu: #00d2ff;
+--border: #30363d;
+}
 
-        /* ZONE GRAPHIQUE AVEC LOGO FILIGRANE */
-        #chart-zone { flex: 4; border-right: 1px solid #30363d; position: relative; background: #0d1117; }
-        #tv-chart { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
-        
-        .chart-watermark {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            z-index: 2; opacity: 0.15; pointer-events: none; width: 25%;
-        }
+html, body { height: 100%; margin: 0; overflow: hidden; background-color: var(--bg-deep); font-family: 'Inter', 'Segoe UI', sans-serif; color: white; }
 
-        /* SIDEBAR DASHBOARD */
-        #side-dashboard { width: 380px; background-color: #111418; display: flex; flex-direction: column; border-left: 1px solid #30363d; overflow-y: auto; }
-        .header-brand { padding: 15px; background: #1c1f26; border-bottom: 2px solid #e3b341; text-align: center; }
-        .header-logo { height: 45px; }
+.main-container { display: flex; height: 100vh; width: 100vw; }
 
-        /* CALCULATEUR STYLE PREMIUM */
-        .calc-card { background: #1c1f26; margin: 15px; padding: 20px; border-radius: 15px; border: 1px solid #30363d; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .calc-title { color: #00d2ff; text-align: center; font-weight: bold; font-size: 14px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
-        .input-label { font-size: 9px; color: #8b949e; font-weight: bold; text-transform: uppercase; margin-bottom: 4px; display: block; }
-        .dual-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-        .calc-card input { width: 100%; background: #2d333b; border: 1px solid #444c56; border-radius: 8px; padding: 10px; color: white; box-sizing: border-box; outline: none; font-weight: bold; }
-        
-        .result-box { background: #0d1117; border: 2px solid #00d2ff; border-radius: 12px; padding: 15px; margin: 15px 0; text-align: center; box-shadow: 0 0 15px rgba(0, 210, 255, 0.15); }
-        .result-val { color: #00d2ff; font-size: 36px; font-weight: 800; display: block; }
-        .split-info { margin-top: 10px; padding-top: 10px; border-top: 1px dashed #30363d; display: flex; justify-content: space-around; font-size: 10px; color: #00ff88; font-weight: bold; }
+/* 1. SIDEBAR ICONIQUE (STYLE JIFU) */
+.jifu-sidebar {
+width: 65px;
+background-color: var(--bg-sidebar);
+border-right: 1px solid var(--border);
+display: flex;
+flex-direction: column;
+align-items: center;
+padding-top: 20px;
+z-index: 10;
+}
+.nav-icon {
+width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
+margin-bottom: 20px; border-radius: 10px; color: #8b949e; cursor: pointer; transition: 0.3s;
+}
+.nav-icon:hover, .nav-icon.active { background: var(--bg-card); color: var(--accent); }
 
-        /* SIGNAUX ACCORDÉON */
-        .section-title { font-size: 10px; color: #8b949e; text-transform: uppercase; padding: 10px 20px; letter-spacing: 1.5px; }
-        .lct-accordion { margin: 0 15px 10px; border-radius: 10px; border: 1px solid #2d333b; background: #1c1f26; overflow: hidden; }
-        .lct-header { padding: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #e3b341; transition: 0.2s; }
-        .lct-header:hover { background: #24292f; }
-        .lct-content { max-height: 0; overflow: hidden; transition: 0.3s ease; background: #0d1117; }
-        .lct-content.open { max-height: 500px; padding: 12px; border-top: 1px solid #30363d; }
-        
-        .badge { display: flex; justify-content: space-between; padding: 10px; border-radius: 6px; font-size: 11px; margin-bottom: 5px; background: #1c1f26; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; }
-        .badge:hover { background: #2d333b; }
-        .tp { border-left: 3px solid #00ff88; color: #00ff88; }
-        .sl { border-left: 3px solid #ff5252; color: #ff5252; }
-    </style>
+/* 2. ZONE CENTRALE (GRAPHIQUE + LOGO) */
+.center-content { flex: 1; display: flex; flex-direction: column; position: relative; }
+
+#chart-zone { flex: 1; position: relative; background: var(--bg-deep); }
+#tv-chart { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+
+/* Ton filigrane préservé */
+.chart-watermark {
+position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+z-index: 2; opacity: 0.12; pointer-events: none; width: 300px;
+}
+
+/* ZONE OSCILLATEUR (BAS DU GRAPHIQUE) */
+#oscillator-zone {
+height: 150px;
+background: var(--bg-sidebar);
+border-top: 1px solid var(--border);
+z-index: 5;
+display: flex;
+align-items: center;
+justify-content: center;
+color: #444c56;
+font-size: 12px;
+text-transform: uppercase;
+}
+
+/* 3. DASHBOARD DROITE (CALCULATEUR + SIGNALS) */
+#side-dashboard {
+width: 350px;
+background-color: var(--bg-sidebar);
+display: flex;
+flex-direction: column;
+border-left: 1px solid var(--border);
+overflow-y: auto;
+}
+
+/* Ton Header */
+.header-brand { padding: 20px; text-align: center; border-bottom: 1px solid var(--border); }
+.header-logo { height: 40px; }
+
+/* Calculateur Premium */
+.calc-card { background: var(--bg-card); margin: 15px; padding: 15px; border-radius: 12px; border: 1px solid var(--border); }
+.calc-title { color: var(--blue-jifu); text-align: center; font-size: 12px; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; }
+
+.input-group { margin-bottom: 10px; }
+.input-label { font-size: 10px; color: #8b949e; margin-bottom: 5px; display: block; }
+.dual-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+input {
+width: 100%; background: #0d1117; border: 1px solid var(--border);
+border-radius: 6px; padding: 8px; color: white; box-sizing: border-box; outline: none;
+}
+
+.result-box {
+background: #0d1117; border: 1px solid var(--blue-jifu); border-radius: 8px;
+padding: 10px; margin-top: 15px; text-align: center;
+}
+.result-val { color: var(--blue-jifu); font-size: 28px; font-weight: 800; display: block; }
+
+/* Signaux */
+.section-title { font-size: 11px; color: #8b949e; padding: 10px 15px; text-transform: uppercase; }
+.signal-item {
+margin: 0 15px 10px; padding: 12px; background: var(--bg-card);
+border-radius: 8px; border-left: 4px solid var(--accent); cursor: pointer; transition: 0.2s;
+}
+.signal-item:hover { background: #21262d; transform: translateX(5px); }
+.signal-info { display: flex; justify-content: space-between; align-items: center; }
+
+.tp-list { margin-top: 10px; display: none; padding-top: 10px; border-top: 1px solid var(--border); }
+.tp-list.open { display: block; }
+.badge { display: flex; justify-content: space-between; font-size: 10px; padding: 5px; color: #00ff88; }
+</style>
 </head>
 <body>
 
-<div class="main-wrapper">
-    <div class="top-section">
-        <div id="chart-zone">
-            <div id="tv-chart"></div>
-            <img src="logo.png" class="chart-watermark">
-        </div>
+<div class="main-container">
+<!-- BARRE LATERALE STYLE JIFU -->
+<nav class="jifu-sidebar">
+<div class="nav-icon active"><i class="fas fa-chart-line"></i></div>
+<div class="nav-icon"><i class="fas fa-graduation-cap"></i></div>
+<div class="nav-icon"><i class="fas fa-bell"></i></div>
+<div class="nav-icon"><i class="fas fa-cog"></i></div>
+<div class="nav-icon" style="margin-top: auto;"><i class="fas fa-sign-out-alt"></i></div>
+</nav>
 
-        <div id="side-dashboard">
-            <div class="header-brand"><img src="logo.png" class="header-logo"></div>
+<!-- ZONE CENTRALE -->
+<div class="center-content">
+<div id="chart-zone">
+<div id="tv-chart"></div>
+<!-- Ton Logo en filigrane -->
+<img src="logo.png" class="chart-watermark">
+</div>
 
-            <!-- CALCULATEUR DYNAMIQUE -->
-            <div class="calc-card">
-                <div class="calc-title">Calculateur de Gestion</div>
-                <div class="dual-inputs">
-                    <div><span class="input-label">Capital (€)</span><input type="number" id="cap" value="1000" oninput="updateCalculation()"></div>
-                    <div><span class="input-label">Risque %</span><input type="number" id="risk" value="1" step="0.5" oninput="updateCalculation()"></div>
-                </div>
-                <div class="dual-inputs">
-                    <div><span class="input-label">Entrée</span><input type="number" id="price-in" placeholder="0.00" oninput="updateCalculation()"></div>
-                    <div><span class="input-label">Stop Loss</span><input type="number" id="price-sl" placeholder="0.00" oninput="updateCalculation()"></div>
-                </div>
-                
-                <div class="result-box">
-                    <span style="font-size:10px; font-weight:bold;">LOT TOTAL</span>
-                    <span id="res-lot" class="result-val">0.10</span>
-                    <div class="split-info">
-                        <div>TP1 (33%)<br><b id="split-1">0.03</b></div>
-                        <div>TP2 (33%)<br><b id="split-2">0.03</b></div>
-                        <div>TP3 (33%)<br><b id="split-3">0.04</b></div>
-                    </div>
-                </div>
-            </div>
+<!-- Zone pour ton futur indicateur Trend Wave -->
+<div id="oscillator-zone">
+<i class="fas fa-wave-square" style="margin-right: 10px;"></i>
+Trend Wave Momentum Oscillator
+</div>
+</div>
 
-            <div class="section-title">Signaux Scanner VIP</div>
-            <div id="alerts-log">
-                
-                <!-- SIGNAL GOLD -->
-                <div class="lct-accordion">
-                    <div class="lct-header" onclick="autoTrade('OANDA:XAUUSD', 2348.40, 2342.10, this, 10)">
-                        <div><b>GOLD (XAUUSD)</b><br><small>Achat Confirmé</small></div>
-                        <div style="font-weight:bold; color:#e3b341;">2348.40</div>
-                    </div>
-                    <div class="lct-content">
-                        <div class="badge tp" onclick="copyVal('2355.00')"><span>TP 1</span> <span>2355.00 📋</span></div>
-                        <div class="badge tp" onclick="copyVal('2360.00')"><span>TP 2</span> <span>2360.00 📋</span></div>
-                        <div class="badge tp" onclick="copyVal('2370.00')"><span>TP 3</span> <span>2370.00 📋</span></div>
-                        <div class="badge sl" onclick="copyVal('2342.10')"><span>STOP LOSS</span> <span>2342.10 📋</span></div>
-                    </div>
-                </div>
+<!-- DASHBOARD DROITE -->
+<div id="side-dashboard">
+<div class="header-brand"><img src="logo.png" class="header-logo"></div>
 
-                <!-- SIGNAL US30 -->
-                <div class="lct-accordion">
-                    <div class="lct-header" onclick="autoTrade('CAPITALCOM:US30', 38500, 38450, this, 1)">
-                        <div><b>DOW JONES (US30)</b><br><small>Vente Setup</small></div>
-                        <div style="font-weight:bold; color:#00d2ff;">38500</div>
-                    </div>
-                    <div class="lct-content">
-                        <div class="badge tp" onclick="copyVal('38400')"><span>TP 1</span> <span>38400 📋</span></div>
-                        <div class="badge tp" onclick="copyVal('38350')"><span>TP 2</span> <span>38350 📋</span></div>
-                        <div class="badge tp" onclick="copyVal('38300')"><span>TP 3</span> <span>38300 📋</span></div>
-                        <div class="badge sl" onclick="copyVal('38450')"><span>STOP LOSS</span> <span>38450 📋</span></div>
-                    </div>
-                </div>
+<div class="calc-card">
+<div class="calc-title">Risk Management</div>
+<div class="dual-inputs group">
+<div><span class="input-label">CAPITAL (€)</span><input type="number" id="cap" value="1000" oninput="updateCalculation()"></div>
+<div><span class="input-label">RISQUE %</span><input type="number" id="risk" value="1" oninput="updateCalculation()"></div>
+</div>
+<div class="dual-inputs group" style="margin-top:10px;">
+<div><span class="input-label">ENTRÉE</span><input type="number" id="price-in" placeholder="0.00" oninput="updateCalculation()"></div>
+<div><span class="input-label">STOP LOSS</span><input type="number" id="price-sl" placeholder="0.00" oninput="updateCalculation()"></div>
+</div>
 
-            </div>
-        </div>
-    </div>
+<div class="result-box">
+<span style="font-size:9px; color:#8b949e;">POSITION SIZE (LOTS)</span>
+<span id="res-lot" class="result-val">0.10</span>
+</div>
+</div>
+
+<div class="section-title">Scanner VIP Alerts</div>
+<div id="alerts-container">
+<!-- Signal 1 -->
+<div class="signal-item" onclick="autoTrade('OANDA:XAUUSD', 2348.40, 2342.10, this, 10)">
+<div class="signal-info">
+<div><b>GOLD</b><br><small style="color:#8b949e;">Achat Confirmé</small></div>
+<div style="color:var(--accent); font-weight:bold;">2348.40</div>
+</div>
+<div class="tp-list">
+<div class="badge">TP1: 2355.00</div>
+<div class="badge">TP2: 2360.00</div>
+<div class="badge" style="color:#ff5252;">SL: 2342.10</div>
+</div>
+</div>
+
+<!-- Signal 2 -->
+<div class="signal-item" style="border-left-color: var(--blue-jifu);" onclick="autoTrade('CAPITALCOM:US30', 38500, 38550, this, 1)">
+<div class="signal-info">
+<div><b>DOW JONES</b><br><small style="color:#8b949e;">Vente Setup</small></div>
+<div style="color:var(--blue-jifu); font-weight:bold;">38500</div>
+</div>
+<div class="tp-list">
+<div class="badge">TP1: 38400</div>
+<div class="badge" style="color:#ff5252;">SL: 38550</div>
+</div>
+</div>
+</div>
+</div>
 </div>
 
 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
 <script>
-    let currentFactor = 10;
+let currentFactor = 10;
+let tvWidget;
 
-    function loadChart(symbol) {
-        new TradingView.widget({
-            "autosize": true, 
-            "symbol": symbol, 
-            "interval": "15", 
-            "theme": "dark", 
-            "style": "1",
-            "locale": "fr", 
-            "hide_side_toolbar": false, 
-            "allow_symbol_change": true,
-            "container_id": "tv-chart", 
-            "backgroundColor": "#0d1117",
-            "lock_scale": false // Permet de débloquer l'échelle de prix
-        });
-    }
-    loadChart("OANDA:XAUUSD");
+function loadChart(symbol) {
+tvWidget = new TradingView.widget({
+"autosize": true,
+"symbol": symbol,
+"interval": "15",
+"theme": "dark",
+"style": "1",
+"locale": "fr",
+"hide_side_toolbar": false,
+"container_id": "tv-chart",
+"backgroundColor": "#0d1117",
+"gridColor": "rgba(48, 54, 61, 0.5)"
+});
+}
+loadChart("OANDA:XAUUSD");
 
-    function autoTrade(symbol, entry, sl, element, factor) {
-        loadChart(symbol);
-        document.getElementById('price-in').value = entry;
-        document.getElementById('price-sl').value = sl;
-        currentFactor = factor;
-        updateCalculation();
-        
-        const content = element.nextElementSibling;
-        document.querySelectorAll('.lct-content').forEach(c => c.classList.remove('open'));
-        content.classList.add('open');
-    }
+function autoTrade(symbol, entry, sl, element, factor) {
+// 1. Change le graphique
+loadChart(symbol);
 
-    function updateCalculation() {
-        const cap = parseFloat(document.getElementById('cap').value);
-        const risk = parseFloat(document.getElementById('risk').value);
-        const entry = parseFloat(document.getElementById('price-in').value);
-        const sl = parseFloat(document.getElementById('price-sl').value);
+// 2. Remplit le calculateur
+document.getElementById('price-in').value = entry;
+document.getElementById('price-sl').value = sl;
+currentFactor = factor;
+updateCalculation();
 
-        if (cap && risk && entry && sl && entry !== sl) {
-            const amountToRisk = cap * (risk / 100);
-            const distance = Math.abs(entry - sl);
-            
-            let totalLots = amountToRisk / (distance * currentFactor);
-            if (totalLots < 0.01) totalLots = 0.01;
+// 3. Animation d'ouverture
+document.querySelectorAll('.tp-list').forEach(l => l.classList.remove('open'));
+element.querySelector('.tp-list').classList.add('open');
+}
 
-            document.getElementById('res-lot').innerText = totalLots.toFixed(2);
-            
-            const baseSplit = Math.floor((totalLots / 3) * 100) / 100;
-            const remainder = (totalLots - (baseSplit * 2)).toFixed(2);
-            
-            document.getElementById('split-1').innerText = (baseSplit < 0.01 ? 0.01 : baseSplit).toFixed(2);
-            document.getElementById('split-2').innerText = (baseSplit < 0.01 ? 0.01 : baseSplit).toFixed(2);
-            document.getElementById('split-3').innerText = (remainder < 0.01 ? 0.01 : remainder).toFixed(2); 
-        }
-    }
+function updateCalculation() {
+const cap = parseFloat(document.getElementById('cap').value);
+const risk = parseFloat(document.getElementById('risk').value);
+const entry = parseFloat(document.getElementById('price-in').value);
+const sl = parseFloat(document.getElementById('price-sl').value);
 
-    function copyVal(val) { navigator.clipboard.writeText(val); }
-    updateCalculation();
+if (cap && risk && entry && sl && entry !== sl) {
+const amountToRisk = cap * (risk / 100);
+const distance = Math.abs(entry - sl);
+let totalLots = amountToRisk / (distance * currentFactor);
+document.getElementById('res-lot').innerText = (totalLots < 0.01 ? 0.01 : totalLots).toFixed(2);
+}
+}
 </script>
 </body>
 </html>
