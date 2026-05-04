@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>LE COIN TRADER - VIP TERMINAL</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Bibliothèque pour les alertes pro -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         :root {
             --bg-deep: #060606;
@@ -16,17 +18,15 @@
         html, body { height: 100%; margin: 0; overflow: hidden; background-color: var(--bg-deep); font-family: 'Inter', sans-serif; color: white; }
         .app-wrapper { display: flex; flex-direction: column; height: 100vh; }
 
-        /* HEADER */
         .top-nav-bar {
             height: 45px; background: #000; border-bottom: 1px solid var(--border);
-            display: flex; align-items: center; justify-content: flex-end; padding: 0 20px; gap: 20px; font-size: 12px; z-index: 100;
+            display: flex; align-items: center; justify-content: flex-end; padding: 0 20px; gap: 20px; font-size: 12px;
         }
         .live-tag { background: #ff0050; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 9px; animation: blink 1.5s infinite; }
         @keyframes blink { 0% {opacity: 1;} 50% {opacity: 0.3;} 100% {opacity: 1;} }
 
         .main-container { display: flex; flex: 1; height: calc(100vh - 45px); }
 
-        /* SIDEBAR */
         .jifu-sidebar {
             width: 60px; background-color: #000; border-right: 1px solid var(--border);
             display: flex; flex-direction: column; align-items: center; padding-top: 15px; flex-shrink: 0;
@@ -34,11 +34,9 @@
         .nav-icon { width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; color: #d1d4dc; cursor: pointer; font-size: 18px; border: none; background: none; }
         .nav-icon.active { color: var(--accent); border-left: 3px solid var(--accent); }
 
-        /* GRAPHIQUE */
-        .center-content { flex: 1; display: flex; flex-direction: column; background: #131722; }
+        .center-content { flex: 1; display: flex; flex-direction: column; background: #131722; position: relative; }
         #tv-chart { flex: 1; }
 
-        /* DASHBOARD DROITE */
         #side-dashboard { width: 320px; background-color: #000; border-left: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto; }
         .calc-card { background: #121212; margin: 10px; padding: 15px; border-radius: 8px; border: 1px solid #2a2e39; }
         .result-box { background: #000; border: 1px solid var(--blue-jifu); margin-top: 15px; padding: 12px; border-radius: 6px; text-align: center; }
@@ -64,9 +62,10 @@
 
     <div class="main-container">
         <nav class="jifu-sidebar">
-            <button class="nav-icon active"><i class="fas fa-home"></i></button>
-            <button class="nav-icon" style="color:var(--accent)"><i class="fas fa-microchip"></i></button>
-            <button class="nav-icon" style="margin-top: auto;"><i class="fas fa-sign-out-alt"></i></button>
+            <button class="nav-icon active" onclick="showNavAlert('Dashboard Principal')"><i class="fas fa-home"></i></button>
+            <button class="nav-icon" style="color:var(--accent)" onclick="showNavAlert('Stratégie VIP')"><i class="fas fa-microchip"></i></button>
+            <button class="nav-icon" onclick="showNavAlert('Analyses Marché')"><i class="fas fa-chart-bar"></i></button>
+            <button class="nav-icon" style="margin-top: auto;" onclick="showNavAlert('Déconnexion')"><i class="fas fa-sign-out-alt"></i></button>
         </nav>
 
         <div class="center-content">
@@ -74,7 +73,6 @@
         </div>
 
         <aside id="side-dashboard">
-            <!-- CALCULATEUR -->
             <div class="calc-card">
                 <div style="color:var(--blue-jifu); text-align:center; font-size:11px; font-weight:bold; margin-bottom:10px;">RISK MANAGEMENT</div>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
@@ -90,15 +88,12 @@
                 </div>
             </div>
 
-            <div style="font-size:10px; padding:10px 15px; color:#444;">SIGNALS (CLIQUEZ POUR CHARGER)</div>
-            
-            <!-- SIGNAUX CLIQUABLES -->
+            <div style="font-size:10px; padding:10px 15px; color:#444;">SIGNAUX SCANNER</div>
             <div class="signal-item" onclick="activateSignal('BITSTAMP:BTCUSD', 79723, 79200)">
-                <b>BTC / USD</b><br><small style="color:var(--accent)">Achat @ 79723</small>
+                <b>BITCOIN (BTC)</b><br><small style="color:var(--accent)">Achat @ 79723</small>
             </div>
-            
             <div class="signal-item" style="border-left-color: var(--blue-jifu)" onclick="activateSignal('OANDA:XAUUSD', 2348.40, 2342.10)">
-                <b>GOLD (XAUUSD)</b><br><small style="color:var(--blue-jifu)">Achat @ 2348.40</small>
+                <b>GOLD (OR)</b><br><small style="color:var(--blue-jifu)">Achat @ 2348.40</small>
             </div>
         </aside>
     </div>
@@ -106,23 +101,53 @@
 
 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
 <script>
-    // HEURE
+    // HEURE DYNAMIQUE
     setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('fr-FR') + " Europe/Paris"; }, 1000);
 
-    // FONCTION BASCULE ET ALERTE
+    // ALERTES DE NAVIGATION
+    function showNavAlert(module) {
+        Swal.fire({
+            title: module,
+            text: 'Accès au module ' + module + ' en cours...',
+            icon: 'info',
+            background: '#121212',
+            color: '#fff',
+            confirmButtonColor: '#e3b341',
+            timer: 1500,
+            showConfirmButton: false
+        });
+    }
+
+    // FONCTION BASCULE ET VRAIE ALERTE
     function activateSignal(symbol, entryPrice, stopLoss) {
-        // 1. Mise à jour graphique
+        // Chargement du graphique avec le VRAI oscillateur intégré
         new TradingView.widget({
-            "autosize": true, "symbol": symbol, "interval": "5", "theme": "dark", "container_id": "tv-chart"
+            "autosize": true,
+            "symbol": symbol,
+            "interval": "5",
+            "theme": "dark",
+            "container_id": "tv-chart",
+            "studies": [
+                "StochasticRSI@tv-basicstudies", // Remplace par ton WaveTrend une fois sauvegardé
+                "MASimple@tv-basicstudies"
+            ]
         });
 
-        // 2. Remplissage calculateur
         document.getElementById('entry').value = entryPrice;
         document.getElementById('sl').value = stopLoss;
         calculate();
 
-        // 3. Alerte visuelle de test
-        alert("✅ Signal chargé : " + symbol + "\n📈 Prix d'entrée injecté : " + entryPrice + "\n🛑 SL injecté : " + stopLoss + "\n\nLe calculateur a été mis à jour !");
+        Swal.fire({
+            title: 'Signal Injecté !',
+            html: `Actif: <b>${symbol}</b><br>Entrée: ${entryPrice} | SL: ${stopLoss}`,
+            icon: 'success',
+            background: '#121212',
+            color: '#fff',
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000
+        });
     }
 
     // CALCULATEUR
@@ -138,7 +163,6 @@
         }
     }
 
-    // CHARGEMENT INITIAL
     window.onload = () => { activateSignal('BITSTAMP:BTCUSD', 79723, 79200); };
 </script>
 </body>
