@@ -25,11 +25,11 @@
 
         .main-container { display: flex; flex: 1; height: calc(100vh - 45px); }
 
-        /* ZONE GRAPHIQUE PLEIN ÉCRAN */
+        /* ZONE GRAPHIQUE */
         .center-content { flex: 1; display: flex; flex-direction: column; background: #131722; position: relative; }
         #tv-chart { flex: 1; border: none; }
 
-        /* FILIGRANE LOGO CENTRE GRAPH */
+        /* FILIGRANE LOGO CENTRE */
         .chart-watermark {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             opacity: 0.08; width: 300px; pointer-events: none; z-index: 1;
@@ -51,7 +51,6 @@
             margin: 5px 10px; padding: 12px; background: #121212; border-radius: 6px; 
             border-left: 3px solid var(--accent); cursor: pointer; transition: 0.2s;
         }
-        .signal-item:hover { background: #1c1c1c; }
     </style>
 </head>
 <body>
@@ -64,15 +63,12 @@
     </header>
 
     <div class="main-container">
-        <!-- Sidebar retirée : TradingView affichera ses propres outils à gauche -->
         <div class="center-content">
             <div id="tv-chart"></div>
-            <!-- Logo en filigrane au centre du graphique -->
             <img src="logo.png" class="chart-watermark">
         </div>
 
         <aside id="side-dashboard">
-            <!-- Logo en haut de la colonne de droite -->
             <div class="header-brand">
                 <img src="logo.png" class="header-logo">
             </div>
@@ -107,7 +103,6 @@
 <script>
     let currentMode = 'crypto';
 
-    // Heure dynamique
     setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('fr-FR') + " Europe/Paris"; }, 1000);
 
     function activateSignal(symbol, entryPrice, stopLoss, mode) {
@@ -119,10 +114,10 @@
             "theme": "dark",
             "style": "1",
             "container_id": "tv-chart",
-            "hide_side_toolbar": false, // AFFICHE LES OUTILS DE DESSIN À GAUCHE
+            "hide_side_toolbar": false,
             "allow_symbol_change": true,
             "details": false,
-            "studies": ["StochasticRSI@tv-basicstudies"]
+            "studies": [] // RSI retiré d'ici
         });
 
         document.getElementById('entry').value = entryPrice;
@@ -139,13 +134,12 @@
         if (cap && risk && entry && sl && entry !== sl) {
             const riskAmount = cap * (risk / 100);
             const diff = Math.abs(entry - sl);
-            // Calcul ajusté PU Prime
             let res = (currentMode === 'crypto') ? (riskAmount / diff) : (riskAmount / (diff * 10));
             document.getElementById('res-lot').innerText = (res < 0.01 ? 0.01 : res).toFixed(2);
         }
     }
 
-    window.onload = () => { activateSignal('BITSTAMP:BTCUSD', 79723, 79200, 'crypto'); };
+    window.onload = () => { activateSignal('OANDA:XAUUSD', 2348.4, 2342.1, 'gold'); };
 </script>
 </body>
 </html>
