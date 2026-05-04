@@ -3,33 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <title>LE COIN TRADER - VIP TERMINAL V15.0</title>
-    <!-- FontAwesome pour les icônes JIFU style -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --bg-deep: #060606; /* Noir profond des photos Elite */
+            --bg-deep: #060606;
             --bg-sidebar: #000000;
             --bg-card: #121212;
-            --accent: #e3b341; /* Ton Or VIP */
+            --accent: #e3b341;
             --blue-jifu: #00d2ff;
             --border: #1e222d;
         }
 
         html, body { height: 100%; margin: 0; overflow: hidden; background-color: var(--bg-deep); font-family: 'Inter', sans-serif; color: white; }
-
         .app-wrapper { display: flex; flex-direction: column; height: 100vh; }
 
-        /* 1. TOP NAV BAR (Photo 4) */
+        /* HEADER DYNAMIQUE */
         .top-nav-bar {
             height: 45px; background: #000; border-bottom: 1px solid var(--border);
             display: flex; align-items: center; justify-content: flex-end; padding: 0 20px; gap: 20px; font-size: 12px; z-index: 100;
         }
-        .live-tag { background: #ff0050; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 9px; animation: blink 2s infinite; }
-        @keyframes blink { 0% {opacity: 1;} 50% {opacity: 0.5;} 100% {opacity: 1;} }
+        .live-tag { background: #ff0050; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 9px; animation: blink 1.5s infinite; }
+        @keyframes blink { 0% {opacity: 1;} 50% {opacity: 0.3;} 100% {opacity: 1;} }
 
         .main-container { display: flex; flex: 1; height: calc(100vh - 45px); }
 
-        /* 2. SIDEBAR ICONIQUE (Photo 1) */
+        /* SIDEBAR (Image_aaec28.jpg) */
         .jifu-sidebar {
             width: 60px; background-color: #000; border-right: 1px solid var(--border);
             display: flex; flex-direction: column; align-items: center; padding-top: 15px; flex-shrink: 0;
@@ -39,9 +37,8 @@
         .nav-icon.active { color: var(--accent); position: relative; }
         .nav-icon.active::after { content: ''; position: absolute; left: 0; width: 3px; height: 20px; background: var(--accent); }
 
-        /* 3. ZONE CENTRALE (Graphique) */
+        /* CENTRE & GRAPHIQUE */
         .center-content { flex: 1; display: flex; flex-direction: column; min-width: 0; background: #131722; }
-
         .chart-controls {
             height: 38px; background: #131722; border-bottom: 1px solid var(--border);
             display: flex; align-items: center; justify-content: flex-end; padding: 0 10px; gap: 8px;
@@ -50,57 +47,39 @@
 
         #chart-zone { flex: 1; position: relative; overflow: hidden; }
         #tv-chart { width: 100%; height: 100%; border: none; }
-        
         .chart-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.12; width: 250px; pointer-events: none; z-index: 5; }
 
-        /* 4. OSCILLATEUR TREND WAVE (Bas de la Photo 5) */
+        /* OSCILLATEUR ANIME (Image_aaeb32.jpg) */
         #oscillator-zone {
-            height: 140px; background: #000; border-top: 2px solid var(--border); padding: 10px; flex-shrink: 0;
+            height: 130px; background: #000; border-top: 2px solid var(--border); padding: 10px; flex-shrink: 0; overflow: hidden;
         }
         .wave-header { font-size: 10px; color: #8b949e; display: flex; justify-content: space-between; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* 5. DASHBOARD DROITE (Calculateur + Signaux) */
+        /* DASHBOARD DROITE */
         #side-dashboard {
             width: 320px; background-color: #000; border-left: 1px solid var(--border);
             display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto;
         }
-
         .header-brand { padding: 15px; text-align: center; border-bottom: 1px solid var(--border); }
-        .header-logo { height: 35px; }
-
         .calc-card { background: #121212; margin: 10px; padding: 15px; border-radius: 8px; border: 1px solid #2a2e39; }
-        .calc-title { color: var(--blue-jifu); text-align: center; font-size: 11px; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; }
-
-        .input-label { font-size: 9px; color: #8b949e; margin-bottom: 4px; display: block; }
-        input { width: 100%; background: #000; border: 1px solid #333; border-radius: 4px; padding: 8px; color: white; margin-top: 2px; outline: none; box-sizing: border-box; }
-        input:focus { border-color: var(--accent); }
-
         .result-box { background: #000; border: 1px solid var(--blue-jifu); margin-top: 15px; padding: 12px; border-radius: 6px; text-align: center; }
         .result-val { color: var(--blue-jifu); font-size: 32px; font-weight: 800; display: block; }
-
-        /* Alertes Signaux */
-        .section-title { font-size: 10px; color: #444; padding: 10px 15px; text-transform: uppercase; font-weight: bold; }
-        .signal-item {
-            margin: 5px 10px; padding: 12px; background: #121212; border-radius: 6px; 
-            border-left: 3px solid var(--accent); cursor: pointer; transition: 0.2s;
-        }
-        .signal-item:hover { background: #1c1c1c; transform: translateX(5px); }
+        input { width: 100%; background: #000; border: 1px solid #333; border-radius: 4px; padding: 8px; color: white; margin-top: 5px; outline: none; }
+        .signal-item { margin: 5px 10px; padding: 12px; background: #121212; border-radius: 6px; border-left: 3px solid var(--accent); cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div class="app-wrapper">
-    <!-- BARRE SUPÉRIEURE -->
     <header class="top-nav-bar">
         <div class="live-tag">LIVE</div>
-        <div>23:48 Europe/Paris <i class="fas fa-chevron-down"></i></div>
+        <div id="real-time-clock">--:--:-- Europe/Paris</div>
         <div><i class="fas fa-globe"></i> French (FR) <i class="fas fa-chevron-down"></i></div>
         <div><i class="fas fa-bell-slash"></i></div>
         <div style="width: 28px; height: 28px; background: #333; border-radius: 50%;"></div>
     </header>
 
     <div class="main-container">
-        <!-- BARRE LATERALE (Photo 1) -->
         <nav class="jifu-sidebar">
             <div class="nav-icon active"><i class="fas fa-home"></i></div>
             <div class="nav-icon"><i class="fas fa-graduation-cap"></i></div>
@@ -113,7 +92,6 @@
             <div class="nav-icon" style="margin-top: auto;"><i class="fas fa-sign-out-alt"></i></div>
         </nav>
 
-        <!-- ZONE CENTRALE -->
         <div class="center-content">
             <div class="chart-controls">
                 <select class="ctrl-btn"><option>Dark</option></select>
@@ -121,53 +99,36 @@
                 <button class="ctrl-btn"><i class="fas fa-camera"></i></button>
                 <button class="ctrl-btn"><i class="fas fa-expand"></i></button>
             </div>
-
             <div id="chart-zone">
                 <div id="tv-chart"></div>
-                <!-- Filigrane Logo -->
                 <img src="logo.png" class="chart-watermark">
             </div>
-
-            <!-- OSCILLATEUR (Photo 5) -->
             <div id="oscillator-zone">
                 <div class="wave-header">
                     <span>TREND WAVE MOMENTUM OSCILLATOR</span>
-                    <span style="color:var(--blue-jifu)">18.3980 / -5.4517</span>
+                    <span id="wave-data" style="color:var(--blue-jifu)">18.3980 / -5.4517</span>
                 </div>
-                <canvas id="waveCanvas" style="width: 100%; height: 90px;"></canvas>
+                <canvas id="waveCanvas" style="width: 100%; height: 80px;"></canvas>
             </div>
         </div>
 
-        <!-- DASHBOARD DROITE -->
         <aside id="side-dashboard">
-            <div class="header-brand"><img src="logo.png" class="header-logo"></div>
-            
+            <div class="header-brand"><img src="logo.png" style="height: 35px;"></div>
             <div class="calc-card">
-                <div class="calc-title">Risk Management</div>
+                <div style="color:var(--blue-jifu); text-align:center; font-size:11px; font-weight:bold; margin-bottom:15px;">RISK MANAGEMENT</div>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                    <div><span class="input-label">CAPITAL ($)</span><input type="number" id="cap" value="1000" oninput="updateCalculation()"></div>
-                    <div><span class="input-label">RISQUE %</span><input type="number" id="risk" value="1" oninput="updateCalculation()"></div>
+                    <div><label style="font-size:9px; color:#8b949e;">CAPITAL ($)</label><input type="number" id="cap" value="1000" oninput="updateCalculation()"></div>
+                    <div><label style="font-size:9px; color:#8b949e;">RISQUE %</label><input type="number" id="risk" value="1" oninput="updateCalculation()"></div>
                 </div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px;">
-                    <div><span class="input-label">ENTRÉE</span><input type="number" id="price-in" placeholder="0.00" oninput="updateCalculation()"></div>
-                    <div><span class="input-label">STOP LOSS</span><input type="number" id="price-sl" placeholder="0.00" oninput="updateCalculation()"></div>
-                </div>
-
                 <div class="result-box">
-                    <span style="font-size:9px; color:var(--blue-jifu); text-transform:uppercase;">Position Size (Lots)</span>
+                    <span style="font-size:9px; color:var(--blue-jifu);">POSITION SIZE (LOTS)</span>
                     <span id="res-lot" class="result-val">0.16</span>
                 </div>
             </div>
-
-            <div class="section-title">Scanner VIP Alerts</div>
-            <div id="alerts-container">
-                <div class="signal-item" onclick="loadChart('OANDA:XAUUSD')">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <b>GOLD (XAUUSD)</b>
-                        <span style="color:var(--accent); font-weight:bold;">2348.40</span>
-                    </div>
-                    <div style="font-size:10px; color:#8b949e; margin-top:4px;">Achat Confirmé</div>
-                </div>
+            <div style="font-size:10px; color:#444; padding:10px 15px; font-weight:bold;">SCANNER VIP ALERTS</div>
+            <div class="signal-item">
+                <b>BITCOIN (BTCUSD)</b><br>
+                <small style="color:#8b949e;">Signal en attente...</small>
             </div>
         </aside>
     </div>
@@ -175,65 +136,62 @@
 
 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
 <script>
-    let currentFactor = 10;
+    // 1. HORLOGE EN TEMPS RÉEL
+    function updateClock() {
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        document.getElementById('real-time-clock').innerText = timeStr + " Europe/Paris";
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
 
+    // 2. CHARGEMENT GRAPHIQUE
     function loadChart(symbol) {
         new TradingView.widget({
-            "autosize": true,
-            "symbol": symbol,
-            "interval": "15",
-            "theme": "dark",
-            "style": "1",
-            "locale": "fr",
-            "container_id": "tv-chart",
-            "backgroundColor": "#131722",
-            "gridColor": "#1e222d",
-            "hide_top_toolbar": false,
-            "save_image": false
+            "autosize": true, "symbol": symbol, "interval": "5", "theme": "dark", "style": "1",
+            "locale": "fr", "container_id": "tv-chart", "backgroundColor": "#131722", "gridColor": "#1e222d"
         });
     }
-    loadChart("OANDA:XAUUSD");
+    loadChart("BITSTAMP:BTCUSD");
 
-    function updateCalculation() {
-        const cap = parseFloat(document.getElementById('cap').value);
-        const risk = parseFloat(document.getElementById('risk').value);
-        const entry = parseFloat(document.getElementById('price-in').value);
-        const sl = parseFloat(document.getElementById('price-sl').value);
-
-        if (cap && risk && entry && sl && entry !== sl) {
-            const amountToRisk = cap * (risk / 100);
-            const distance = Math.abs(entry - sl);
-            let totalLots = amountToRisk / (distance * currentFactor);
-            document.getElementById('res-lot').innerText = (totalLots < 0.01 ? 0.01 : totalLots).toFixed(2);
-        }
-    }
-
-    // Animation de l'oscillateur (Photo 5)
+    // 3. OSCILLATEUR FLUIDE
     const canvas = document.getElementById('waveCanvas');
     const ctx = canvas.getContext('2d');
+    let offset = 0;
+
     function drawWave() {
         canvas.width = canvas.offsetWidth;
         canvas.height = canvas.offsetHeight;
         ctx.clearRect(0,0,canvas.width,canvas.height);
         
-        // Ligne centrale
         ctx.beginPath();
         ctx.strokeStyle = "rgba(255,255,255,0.05)";
-        ctx.moveTo(0, canvas.height/2);
-        ctx.lineTo(canvas.width, canvas.height/2);
+        ctx.moveTo(0, canvas.height/2); ctx.lineTo(canvas.width, canvas.height/2);
         ctx.stroke();
 
-        // Vague verte
         ctx.beginPath();
         ctx.strokeStyle = '#00ff88';
         ctx.lineWidth = 2;
+        offset += 0.05;
         for(let i=0; i<canvas.width; i++) {
-            ctx.lineTo(i, canvas.height/2 + Math.sin(i*0.03 + Date.now()*0.002)*25);
+            let y = canvas.height/2 + Math.sin(i*0.02 + offset)*20 + Math.cos(i*0.01 + offset)*10;
+            ctx.lineTo(i, y);
         }
         ctx.stroke();
+
+        // Simulation de changement de données
+        if(Math.random() > 0.95) {
+            document.getElementById('wave-data').innerText = (Math.random()*20).toFixed(4) + " / " + (Math.random()*-10).toFixed(4);
+        }
         requestAnimationFrame(drawWave);
     }
     drawWave();
+
+    function updateCalculation() {
+        const cap = parseFloat(document.getElementById('cap').value);
+        const risk = parseFloat(document.getElementById('risk').value);
+        document.getElementById('res-lot').innerText = (cap * (risk/100) / 62.5).toFixed(2); 
+    }
 </script>
 </body>
 </html>
