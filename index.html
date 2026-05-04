@@ -2,13 +2,12 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>LE COIN TRADER - TERMINAL VIP V15.0</title>
+    <title>LE COIN TRADER - VIP TERMINAL</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --bg-deep: #060606;
             --bg-sidebar: #000000;
-            --bg-card: #121212;
             --accent: #e3b341;
             --blue-jifu: #00d2ff;
             --border: #1e222d;
@@ -27,35 +26,31 @@
 
         .main-container { display: flex; flex: 1; height: calc(100vh - 45px); }
 
-        /* SIDEBAR INTERACTIVE */
+        /* SIDEBAR */
         .jifu-sidebar {
             width: 60px; background-color: #000; border-right: 1px solid var(--border);
             display: flex; flex-direction: column; align-items: center; padding-top: 15px; flex-shrink: 0;
         }
-        .nav-icon { 
-            width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; 
-            margin-bottom: 8px; color: #d1d4dc; cursor: pointer; font-size: 18px; transition: 0.2s;
-            text-decoration: none; border: none; background: none;
-        }
-        .nav-icon:hover { color: var(--accent); background: rgba(227, 179, 65, 0.1); border-radius: 8px; }
+        .nav-icon { width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; color: #d1d4dc; cursor: pointer; font-size: 18px; border: none; background: none; }
         .nav-icon.active { color: var(--accent); border-left: 3px solid var(--accent); }
 
-        /* CENTRE & OSCILLATEUR */
-        .center-content { flex: 1; display: flex; flex-direction: column; min-width: 0; background: #131722; }
-        #chart-zone { flex: 1; position: relative; overflow: hidden; }
-        #tv-chart { width: 100%; height: 100%; border: none; }
-
-        #oscillator-zone {
-            height: 140px; background: #000; border-top: 2px solid var(--border); padding: 10px; flex-shrink: 0;
-        }
-        .wave-header { font-size: 10px; color: #8b949e; display: flex; justify-content: space-between; margin-bottom: 5px; }
+        /* GRAPHIQUE */
+        .center-content { flex: 1; display: flex; flex-direction: column; background: #131722; }
+        #tv-chart { flex: 1; }
 
         /* DASHBOARD DROITE */
         #side-dashboard { width: 320px; background-color: #000; border-left: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto; }
         .calc-card { background: #121212; margin: 10px; padding: 15px; border-radius: 8px; border: 1px solid #2a2e39; }
         .result-box { background: #000; border: 1px solid var(--blue-jifu); margin-top: 15px; padding: 12px; border-radius: 6px; text-align: center; }
         .result-val { color: var(--blue-jifu); font-size: 32px; font-weight: 800; display: block; }
+        
         input { width: 100%; background: #000; border: 1px solid #333; border-radius: 4px; padding: 8px; color: white; margin-top: 5px; outline: none; box-sizing: border-box; }
+        
+        .signal-item { 
+            margin: 5px 10px; padding: 12px; background: #121212; border-radius: 6px; 
+            border-left: 3px solid var(--accent); cursor: pointer; transition: 0.2s;
+        }
+        .signal-item:hover { background: #1c1c1c; transform: scale(1.02); }
     </style>
 </head>
 <body>
@@ -63,54 +58,47 @@
 <div class="app-wrapper">
     <header class="top-nav-bar">
         <div class="live-tag">LIVE</div>
-        <div id="clock">10:09:46 Europe/Paris</div>
-        <div><i class="fas fa-globe"></i> French (FR)</div>
+        <div id="clock">--:--:-- Europe/Paris</div>
         <div style="width: 28px; height: 28px; background: #333; border-radius: 50%;"></div>
     </header>
 
     <div class="main-container">
-        <!-- SIDEBAR AVEC ALERTES DE TEST -->
         <nav class="jifu-sidebar">
-            <button class="nav-icon active" onclick="testAlert('Accueil')"><i class="fas fa-home"></i></button>
-            <button class="nav-icon" onclick="testAlert('Académie')"><i class="fas fa-graduation-cap"></i></button>
-            <button class="nav-icon" onclick="testAlert('Signaux')"><i class="fas fa-lightbulb"></i></button>
-            <button class="nav-icon" onclick="testAlert('Live')"><i class="fas fa-video"></i></button>
-            <button class="nav-icon" onclick="testAlert('Profil')"><i class="fas fa-id-badge"></i></button>
-            <button class="nav-icon" onclick="testAlert('Stratégie')" style="color:var(--accent)"><i class="fas fa-microchip"></i></button>
-            <button class="nav-icon" onclick="testAlert('Récompenses')"><i class="fas fa-award"></i></button>
-            <button class="nav-icon" onclick="testAlert('Analyses')"><i class="fas fa-chart-bar"></i></button>
-            <button class="nav-icon" style="margin-top: auto;" onclick="testAlert('Déconnexion')"><i class="fas fa-sign-out-alt"></i></button>
+            <button class="nav-icon active"><i class="fas fa-home"></i></button>
+            <button class="nav-icon" style="color:var(--accent)"><i class="fas fa-microchip"></i></button>
+            <button class="nav-icon" style="margin-top: auto;"><i class="fas fa-sign-out-alt"></i></button>
         </nav>
 
         <div class="center-content">
-            <div id="chart-zone">
-                <div id="tv-chart"></div>
-            </div>
-            <!-- OSCILLATEUR (Vu dans video-1.mp4) -->
-            <div id="oscillator-zone">
-                <div class="wave-header">
-                    <span>TREND WAVE MOMENTUM OSCILLATOR</span>
-                    <span id="wave-numbers" style="color:var(--blue-jifu)">34.54 / 24.99</span>
-                </div>
-                <canvas id="waveCanvas"></canvas>
-            </div>
+            <div id="tv-chart"></div>
         </div>
 
         <aside id="side-dashboard">
+            <!-- CALCULATEUR -->
             <div class="calc-card">
-                <div style="color:var(--blue-jifu); text-align:center; font-size:11px; font-weight:bold; margin-bottom:15px; text-transform:uppercase;">Risk Management</div>
+                <div style="color:var(--blue-jifu); text-align:center; font-size:11px; font-weight:bold; margin-bottom:10px;">RISK MANAGEMENT</div>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                    <div><label style="font-size:9px; color:#8b949e;">CAPITAL ($)</label><input type="number" id="cap" value="1000"></div>
-                    <div><label style="font-size:9px; color:#8b949e;">RISQUE %</label><input type="number" id="risk" value="1"></div>
+                    <div><label style="font-size:9px; color:#666;">CAPITAL ($)</label><input type="number" id="cap" value="1000" oninput="calculate()"></div>
+                    <div><label style="font-size:9px; color:#666;">RISQUE %</label><input type="number" id="risk" value="1" oninput="calculate()"></div>
                 </div>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px;">
-                    <div><label style="font-size:9px; color:#8b949e;">ENTRÉE</label><input type="number" id="entry" placeholder="0.00"></div>
-                    <div><label style="font-size:9px; color:#8b949e;">STOP LOSS</label><input type="number" id="sl" placeholder="0.00"></div>
+                    <div><label style="font-size:9px; color:#666;">ENTRÉE</label><input type="number" id="entry" oninput="calculate()"></div>
+                    <div><label style="font-size:9px; color:#666;">STOP LOSS</label><input type="number" id="sl" oninput="calculate()"></div>
                 </div>
                 <div class="result-box">
-                    <span style="font-size:9px; color:var(--blue-jifu); font-weight:bold;">POSITION SIZE (LOTS)</span>
-                    <span id="lot-result" class="result-val">0.00</span>
+                    <span id="res-lot" class="result-val">0.00</span>
                 </div>
+            </div>
+
+            <div style="font-size:10px; padding:10px 15px; color:#444;">SIGNALS (CLIQUEZ POUR CHARGER)</div>
+            
+            <!-- SIGNAUX CLIQUABLES -->
+            <div class="signal-item" onclick="activateSignal('BITSTAMP:BTCUSD', 79723, 79200)">
+                <b>BTC / USD</b><br><small style="color:var(--accent)">Achat @ 79723</small>
+            </div>
+            
+            <div class="signal-item" style="border-left-color: var(--blue-jifu)" onclick="activateSignal('OANDA:XAUUSD', 2348.40, 2342.10)">
+                <b>GOLD (XAUUSD)</b><br><small style="color:var(--blue-jifu)">Achat @ 2348.40</small>
             </div>
         </aside>
     </div>
@@ -118,80 +106,40 @@
 
 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
 <script>
-    // 1. ALERTES DE TEST POUR FONCTIONNEMENT
-    function testAlert(name) {
-        alert("Action " + name + " activée ! Le bouton fonctionne.");
+    // HEURE
+    setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('fr-FR') + " Europe/Paris"; }, 1000);
+
+    // FONCTION BASCULE ET ALERTE
+    function activateSignal(symbol, entryPrice, stopLoss) {
+        // 1. Mise à jour graphique
+        new TradingView.widget({
+            "autosize": true, "symbol": symbol, "interval": "5", "theme": "dark", "container_id": "tv-chart"
+        });
+
+        // 2. Remplissage calculateur
+        document.getElementById('entry').value = entryPrice;
+        document.getElementById('sl').value = stopLoss;
+        calculate();
+
+        // 3. Alerte visuelle de test
+        alert("✅ Signal chargé : " + symbol + "\n📈 Prix d'entrée injecté : " + entryPrice + "\n🛑 SL injecté : " + stopLoss + "\n\nLe calculateur a été mis à jour !");
     }
 
-    // 2. HORLOGE DYNAMIQUE (Vu dans image_aa89b9.jpg)
-    function updateTime() {
-        const now = new Date();
-        document.getElementById('clock').innerText = now.toLocaleTimeString('fr-FR') + " Europe/Paris";
-    }
-    setInterval(updateTime, 1000);
-    updateTime();
+    // CALCULATEUR
+    function calculate() {
+        const cap = parseFloat(document.getElementById('cap').value);
+        const risk = parseFloat(document.getElementById('risk').value);
+        const entry = parseFloat(document.getElementById('entry').value);
+        const sl = parseFloat(document.getElementById('sl').value);
 
-    // 3. CALCULATEUR INTERACTIF
-    function calculateLots() {
-        const cap = parseFloat(document.getElementById('cap').value) || 0;
-        const risk = parseFloat(document.getElementById('risk').value) || 0;
-        const entry = parseFloat(document.getElementById('entry').value) || 0;
-        const sl = parseFloat(document.getElementById('sl').value) || 0;
-
-        if (cap > 0 && risk > 0 && Math.abs(entry - sl) > 0) {
-            const riskAmount = cap * (risk / 100);
-            const lossPerUnit = Math.abs(entry - sl);
-            const total = riskAmount / (lossPerUnit * 10);
-            document.getElementById('lot-result').innerText = total.toFixed(2);
-        } else {
-            document.getElementById('lot-result').innerText = "0.00";
+        if (cap && risk && entry && sl && entry !== sl) {
+            const res = (cap * (risk / 100)) / (Math.abs(entry - sl) * 10);
+            document.getElementById('res-lot').innerText = res.toFixed(2);
         }
     }
-    document.querySelectorAll('input').forEach(input => {
-        input.addEventListener('input', calculateLots);
-    });
 
-    // 4. OSCILLATEUR WAVE (Fluide comme dans video-1.mp4)
-    const canvas = document.getElementById('waveCanvas');
-    const ctx = canvas.getContext('2d');
-    let points = [];
-    let angle = 0;
-
-    function animateWave() {
-        canvas.width = canvas.offsetWidth;
-        canvas.height = canvas.offsetHeight;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        angle += 0.04;
-        let wt1 = Math.sin(angle) * 28 + Math.sin(angle * 0.5) * 8;
-        let wt2 = Math.sin(angle - 0.6) * 22;
-
-        points.push({wt1, wt2});
-        if (points.length > canvas.width) points.shift();
-
-        ctx.lineWidth = 2;
-        // Dessin WT1 (Vert)
-        ctx.beginPath();
-        ctx.strokeStyle = "#00ff88"; 
-        points.forEach((p, i) => ctx.lineTo(i, (canvas.height/2) - p.wt1));
-        ctx.stroke();
-
-        // Dessin WT2 (Rouge/Aura)
-        ctx.beginPath();
-        ctx.strokeStyle = "#ff0050"; 
-        points.forEach((p, i) => ctx.lineTo(i, (canvas.height/2) - p.wt2));
-        ctx.stroke();
-
-        document.getElementById('wave-numbers').innerText = (wt1 + 30).toFixed(2) + " / " + (wt2 + 20).toFixed(2);
-        requestAnimationFrame(animateWave);
-    }
-    animateWave();
-
-    // 5. CHARGEMENT GRAPHIQUE
-    new TradingView.widget({
-        "autosize": true, "symbol": "BITSTAMP:BTCUSD", "interval": "5", "theme": "dark",
-        "container_id": "tv-chart", "backgroundColor": "#131722"
-    });
+    // CHARGEMENT INITIAL
+    window.onload = () => { activateSignal('BITSTAMP:BTCUSD', 79723, 79200); };
 </script>
 </body>
 </html>
