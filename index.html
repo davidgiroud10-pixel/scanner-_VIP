@@ -38,7 +38,7 @@
 
         #side-dashboard { width: 320px; background-color: #000; border-left: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto; }
         .calc-card { background: #121212; margin: 10px; padding: 15px; border-radius: 8px; border: 1px solid #2a2e39; }
-        .result-box { background: #000; border: 1px solid var(--blue-jifu); margin-top: 15px; padding: 12px; border-radius: 6px; text-align: center; }
+        .result-box { background: #000; border: 2px solid var(--blue-jifu); margin-top: 15px; padding: 12px; border-radius: 6px; text-align: center; }
         .result-val { color: var(--blue-jifu); font-size: 32px; font-weight: 800; display: block; }
         
         input { width: 100%; background: #000; border: 1px solid #333; border-radius: 4px; padding: 8px; color: white; margin-top: 5px; outline: none; box-sizing: border-box; }
@@ -88,10 +88,11 @@
             </div>
 
             <div style="font-size:10px; padding:10px 15px; color:#444;">SIGNAUX SCANNER</div>
-            <div class="signal-item" onclick="activateSignal('BITSTAMP:BTCUSD', 79723, 79200)">
+            <!-- Ajout d'un paramètre 'type' pour ajuster le calcul -->
+            <div class="signal-item" onclick="activateSignal('BITSTAMP:BTCUSD', 79723, 79200, 'crypto')">
                 <b>BITCOIN (BTC)</b><br><small style="color:var(--accent)">Achat @ 79723</small>
             </div>
-            <div class="signal-item" style="border-left-color: var(--blue-jifu)" onclick="activateSignal('OANDA:XAUUSD', 2348.40, 2342.10)">
+            <div class="signal-item" style="border-left-color: var(--blue-jifu)" onclick="activateSignal('OANDA:XAUUSD', 2348.40, 2342.10, 'forex')">
                 <b>GOLD (OR)</b><br><small style="color:var(--blue-jifu)">Achat @ 2348.40</small>
             </div>
         </aside>
@@ -100,12 +101,13 @@
 
 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
 <script>
-    // 1. HEURE TEMPS RÉEL
+    let currentMode = 'crypto'; // Mode par défaut
+
     setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('fr-FR') + " Europe/Paris"; }, 1000);
 
-    // 2. ACTIVATION SIGNAL (SANS ALERTE BLOQUANTE)
-    function activateSignal(symbol, entryPrice, stopLoss) {
-        // Recharge le graphique
+    function activateSignal(symbol, entryPrice, stopLoss, mode) {
+        currentMode = mode; // On définit si c'est BTC ou GOLD
+        
         new TradingView.widget({
             "autosize": true,
             "symbol": symbol,
@@ -115,29 +117,16 @@
             "studies": ["StochasticRSI@tv-basicstudies"]
         });
 
-        // Injecte les prix
         document.getElementById('entry').value = entryPrice;
         document.getElementById('sl').value = stopLoss;
         calculate();
 
-        // Notification discrète (Toast)
         const Toast = Swal.mixin({
-            toast: true,
-            position: 'top-end',
-            showConfirmButton: false,
-            timer: 2000,
-            timerProgressBar: true,
-            background: '#121212',
-            color: '#fff'
+            toast: true, position: 'top-end', showConfirmButton: false, timer: 2000, background: '#121212', color: '#fff'
         });
-
-        Toast.fire({
-            icon: 'success',
-            title: `Graphique ${symbol} chargé`
-        });
+        Toast.fire({ icon: 'success', title: `Graphique ${symbol} chargé` });
     }
 
-    // 3. CALCULATEUR
     function calculate() {
         const cap = parseFloat(document.getElementById('cap').value);
         const risk = parseFloat(document.getElementById('risk').value);
@@ -145,12 +134,19 @@
         const sl = parseFloat(document.getElementById('sl').value);
 
         if (cap && risk && entry && sl && entry !== sl) {
-            const res = (cap * (risk / 100)) / (Math.abs(entry - sl) * 10);
+            const riskAmount = cap * (risk / 100);
+            const diff = Math.abs(entry - sl);
+            
+            // Correction de la formule :
+            // Pour BTC (crypto), le diviseur est simplement la différence de prix.
+            // Pour GOLD (forex), on multiplie souvent par 10 pour les lots standards.
+            let res = (currentMode === 'crypto') ? (riskAmount / diff) : (riskAmount / (diff * 10));
+            
             document.getElementById('res-lot').innerText = res.toFixed(2);
         }
     }
 
-    window.onload = () => { activateSignal('BITSTAMP:BTCUSD', 79723, 79200); };
+    window.onload = () => { activateSignal('BITSTAMP:BTCUSD', 79723, 79200, 'crypto'); };
 </script>
 </body>
 </html>
